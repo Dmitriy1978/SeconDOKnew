@@ -6,11 +6,8 @@ global path
 #sys.path.append("{0}\\Test".format(path))
 import pytest
 
-
-
-
 @pytest.mark.hookwrapper
-def pytest_runtest_makereport(item, call):
+def pytest_runtest_makereport(item):
     pytest_html = item.config.pluginmanager.getplugin('html')
     outcome = yield
     report = outcome.get_result()
@@ -19,29 +16,54 @@ def pytest_runtest_makereport(item, call):
     # ======= Extra ==================
     extra = getattr(report, 'extra', [])
     if report.when == 'call':
-        driver.save_screenshot('C:\\Users\\John\\PycharmProjects\\SeconDOK\\Test_result\\log_screen.png')
+        #driver.save_screenshot('C:\\Users\\John\\PycharmProjects\\SeconDOKnew\\Test_result\\log_screen.png')
+        driver.save_screenshot('C:\\Program Files (x86)\\Jenkins1\\workspace\\SeconDOK\\default\\log_screen.png')
         #from selenium import webdriver
         #screen = driver.get_screenshot_as_base64()
         #extra.append(pytest_html.extras.image(screen, mime_type='image/png', extension='png'))
         #url = driver.current_url
         #extra.append(pytest_html.extras.url(url))
-        #xfail = hasattr(report, 'wasxfail')
+        xfail = hasattr(report, 'wasxfail')
         #if (report.skipped and xfail) or (report.failed and not xfail):
             #only add additional html on failure
             #extra.append(pytest_html.extras.html('<div>Additional HTML</div>'))
         report.extra = extra
+'''
+@pytest.mark.hookwrapper
+def pytest_runtest_makereport(item):
+    """
+    Extends the PyTest Plugin to take and embed screenshot in html report, whenever test fails.
+    :param item:
+    """
+    pytest_html = item.config.pluginmanager.getplugin('html')
+    outcome = yield
+    report = outcome.get_result()
+    extra = getattr(report, 'extra', [])
+
+    if report.when == 'call' or report.when == "setup":
+        xfail = hasattr(report, 'wasxfail')
+        if (report.skipped and xfail) or (report.failed and not xfail):
+            file_name = report.nodeid.replace("::", "_")+".png"
+            _capture_screenshot(file_name)
+            if file_name:
+                html = '<div><img src="%s" alt="screenshot" style="width:304px;height:228px;" ' \
+                       'onclick="window.open(this.src)" align="right"/></div>' % file_name
+                extra.append(pytest_html.extras.html(html))
+        report.extra = extra
 
 
+def _capture_screenshot(name):
+    driver.get_screenshot_as_file(name)
+    '''
 
-
-@pytest.fixture(scope='class')
+@pytest.fixture(scope="class")
 def start(request):
     system = platform.platform()
     global driver
     if "Windows" in system:
         from selenium import webdriver
         driver = webdriver.Chrome()
-        driver.implicitly_wait(10)
+        driver.implicitly_wait(5)
         #driver = webdriver.Firefox()
         request.cls.driver = driver
         driver.maximize_window()
@@ -51,7 +73,7 @@ def start(request):
             driver.quit()
         request.addfinalizer(fin)
 
-    '''
+
     elif "Linux" in system:
         from selenium import webdriver
         from pyvirtualdisplay import Display                       #Enaible for run on Linux systems
@@ -71,7 +93,7 @@ def start(request):
     else:
         print("Unknown platform")
     return driver
-     '''
+
 
 
 
