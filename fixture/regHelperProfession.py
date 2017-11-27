@@ -40,14 +40,13 @@ class regHelperProfession(base):
     def select_institution(self):
         driver = self.driver
         wait.element_xpath_active(driver, regHelperProfession.select_institution_field)
-        time.sleep(4)
+        time.sleep(2)
         driver.find_element_by_xpath(regHelperProfession.select_institution_field).click()
 
     def select_country(self):
         driver = self.driver
-        wait.element_xpath_clickable(driver, regHelperProfession.institution_country)
+        wait.element_xpath_active(driver, regHelperProfession.institution_country)
         driver.find_element_by_xpath(regHelperProfession.institution_country).click()
-        time.sleep(1)
 
     def city_field(self):
         driver = self.driver
@@ -62,7 +61,6 @@ class regHelperProfession(base):
         driver = self.driver
         wait.element_xpath_clickable(driver, regHelperProfession.institution_city_select)
         driver.find_element_by_xpath(regHelperProfession.institution_city_select).click()
-        time.sleep ( 2 )
 
     def year_select(self):
         driver = self.driver
